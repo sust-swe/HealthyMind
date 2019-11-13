@@ -36,12 +36,13 @@ public class PostController {
 	}
 	
 	@PostMapping(value = "/blog/create",consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
 	public String createPost(@RequestBody PostHelper post,@RequestParam(value = "userID") int userID ) {
 		Post postToSubmit = new Post();
 		//postToSubmit.setTitle(post.getTitle());
 		postToSubmit.setBody(post.getBody());
 		//postToSubmit.setAgeLimit(post.getAgeLimit());
-		postToSubmit.setcontentHtml(post.getContentHTML());
+		//postToSubmit.setcontentHtml(post.getContentHTML());
 		User user = userRepository.findByUserid(userID);
 		postToSubmit.setUser(user);
 		//postToSubmit.setTags(post.getTaging());
@@ -60,5 +61,14 @@ public class PostController {
 	public String deletePost(@PathVariable Long blogID) {
 		postRepository.delete(postRepository.getOne(blogID));
 		return "success";
+	}
+	@RequestMapping(value="/blog/update")
+	@ResponseBody
+	public String postUpdate(@RequestBody PostHelper post,@RequestParam(value = "postID")int id) {
+		Long pId = Long.parseLong(Integer.toString(id));
+		Post exist = postRepository.getOne(pId);
+		exist.setBody(post.getBody());
+		postRepository.save(exist);
+		return "SUccess";
 	}
 }
