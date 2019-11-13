@@ -5,10 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.model.Comment;
 import com.example.demo.model.Post;
@@ -27,8 +24,9 @@ public class CommentController {
 	@Autowired
 	private CommentRepository commentRepository;
 	
-	@RequestMapping(value="/createComment",method = RequestMethod.GET)
-	public String createComment(@RequestParam(value = "body") String content,
+	@RequestMapping(value="/createComment",method = RequestMethod.POST)
+	@ResponseBody
+	public String createComment(@RequestPart("content") String content,
 			@RequestParam(value="postID")int postID,
 			@RequestParam(value="userID") int userID) {
 		Comment comment = new Comment();

@@ -5,13 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.model.Post;
 import com.example.demo.model.PostHelper;
@@ -42,12 +36,13 @@ public class PostController {
 	}
 	
 	@PostMapping(value = "/blog/create",consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
 	public String createPost(@RequestBody PostHelper post,@RequestParam(value = "userID") int userID ) {
 		Post postToSubmit = new Post();
 		//postToSubmit.setTitle(post.getTitle());
 		postToSubmit.setBody(post.getBody());
 		//postToSubmit.setAgeLimit(post.getAgeLimit());
-		postToSubmit.setcontentHtml(post.getContentHTML());
+		//postToSubmit.setcontentHtml(post.getContentHTML());
 		User user = userRepository.findByUserid(userID);
 		postToSubmit.setUser(user);
 		//postToSubmit.setTags(post.getTaging());
@@ -65,5 +60,14 @@ public class PostController {
 	public String deletePost(@PathVariable Long blogID) {
 		postRepository.delete(postRepository.getOne(blogID));
 		return "success";
+	}
+	@RequestMapping(value="/blog/update")
+	@ResponseBody
+	public String postUpdate(@RequestBody PostHelper post,@RequestParam(value = "postID")int id) {
+		Long pId = Long.parseLong(Integer.toString(id));
+		Post exist = postRepository.getOne(pId);
+		exist.setBody(post.getBody());
+		postRepository.save(exist);
+		return "SUccess";
 	}
 }

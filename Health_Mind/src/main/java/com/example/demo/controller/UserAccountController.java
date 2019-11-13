@@ -119,7 +119,7 @@ public class UserAccountController {
 			ConfirmationToken confirmationToken = new ConfirmationToken(temp);
 			
 			confirmationTokenRepository.save(confirmationToken);
-			
+			userRepository.save(temp);
 			SimpleMailMessage mailMessage = new SimpleMailMessage();
 			mailMessage.setTo(temp.getEmailId());
 			mailMessage.setSubject("Complete Registration!");
@@ -130,6 +130,23 @@ public class UserAccountController {
 			emailSenderService.sendEmail(mailMessage);
 			return "Success";
 		}
+
+	}
+	@RequestMapping(value="/update",method = RequestMethod.POST)
+	@ResponseBody
+	public String test(@RequestBody UserHelper user,@RequestParam("userID")int id) {
+
+		User exist = userRepository.findByUserid(id);
+
+		System.out.println(exist.getEmailId());
+		exist.setEmailId(user.getEmail());
+		exist.setGender(user.getGender());
+		exist.setName(user.getName());
+		exist.setBio(user.getBio());
+		exist.setPhn_no(user.getPhn_no());
+		exist.setProfession(user.getProfession());
+		userRepository.save(exist);
+		return "Success";
 	}
 
 }
