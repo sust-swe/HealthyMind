@@ -23,4 +23,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 	
 	@Query("select p from Post p where user_id = :userid")
 	List<Post> findAllByUserID(Long userid);
+	
+	@Query(value="select t from Post t")
+	List<Post> getAllPost();
 }
