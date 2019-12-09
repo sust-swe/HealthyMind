@@ -12,6 +12,7 @@ public interface UserRepository extends CrudRepository<User, String> {
 	User findByEmailIdIgnoreCase(String emailId);
 	
 	User findByUserid(int userid);
+	
 	@Query("select u from User u where name = :name and password = :password")
 	User findByNameandPassword(String name,String password);
 	

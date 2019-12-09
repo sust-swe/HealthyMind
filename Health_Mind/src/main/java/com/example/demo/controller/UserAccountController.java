@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -74,14 +76,14 @@ public class UserAccountController {
 			return "Success";
 			
 		}
-		//System.out.println(payload);
 		
 	}
+	@CrossOrigin
 	@PostMapping(value="/login")
 	@ResponseBody
-	public String login(@RequestBody UserHelper user) {
+	public User login(@RequestPart("user") UserHelper user) {
 		User details= userRepository.findByNameandPassword(user.getName(), user.getPassword());
-		return details.getEmailId()+" "+details.getName()+" "+details.getUserid()/*+" "+details.getDueDate()*/;
+		return details;
 		
 	}
 	
@@ -103,31 +105,31 @@ public class UserAccountController {
 		}
 		
 	}
+	@CrossOrigin
 	@RequestMapping(value="/registration",method = RequestMethod.POST)
 	@ResponseBody
-	public String emni(@RequestBody UserHelper user) {
+	public String emni(@RequestPart("user") UserHelper user) {
 		User existingUser = userRepository.findByEmailIdIgnoreCase(user.getEmail());
 		if(existingUser != null)
 		{
 			return "Another user exists";
 		}else {
 			User temp = new User();
-			//temp.setDueDate(user.getDueDate());
 			temp.setName(user.getName());
 			temp.setPassword(user.getPassword());
 			temp.setEmailId(user.getEmail());
-			ConfirmationToken confirmationToken = new ConfirmationToken(temp);
+		//	ConfirmationToken confirmationToken = new ConfirmationToken(temp);
 			
-			confirmationTokenRepository.save(confirmationToken);
+		//	confirmationTokenRepository.save(confirmationToken);
 			userRepository.save(temp);
-			SimpleMailMessage mailMessage = new SimpleMailMessage();
-			mailMessage.setTo(temp.getEmailId());
-			mailMessage.setSubject("Complete Registration!");
-			mailMessage.setFrom("sahasamapty@gmail.com");
-			mailMessage.setText("To confirm your account, please click here : "
-			+"http://localhost:8081/confirm-account?token="+confirmationToken.getConfirmationToken());
-			
-			emailSenderService.sendEmail(mailMessage);
+//			SimpleMailMessage mailMessage = new SimpleMailMessage();
+//			mailMessage.setTo(temp.getEmailId());
+//			mailMessage.setSubject("Complete Registration!");
+//			mailMessage.setFrom("sahasamapty@gmail.com");
+//			mailMessage.setText("To confirm your account, please click here : "
+//			+"http://localhost:8081/confirm-account?token="+confirmationToken.getConfirmationToken());
+//			
+//			emailSenderService.sendEmail(mailMessage);
 			return "Success";
 		}
 
@@ -148,5 +150,16 @@ public class UserAccountController {
 		userRepository.save(exist);
 		return "Success";
 	}
+	
+	
+	@CrossOrigin
+	@ResponseBody
+	@RequestMapping(value="/getOneUser", method=RequestMethod.GET)
+	public User getOne(@RequestParam("userId") int userId)
+	{
+		return userRepository.findByUserid(userId);
+	}
+	
+	
 
 }
