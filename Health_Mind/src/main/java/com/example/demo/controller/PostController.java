@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -28,16 +27,24 @@ public class PostController {
 	
 	@Autowired
 	private FileStorageService fileStorageService;
-	//@Autowired
-	//private TagRepository tagRepository;
+	
 	@Autowired
 	private UserRepository userRepository;
+	
 	
     @CrossOrigin
     @ResponseBody
     @RequestMapping(value = "/getAllPost",method = RequestMethod.GET)
     public List<Post> getAll(){
     	return postRepository.getAllPost();
+    }
+    
+    
+    @CrossOrigin
+    @ResponseBody
+    @RequestMapping(value = "/getAllPostForAdmin",method = RequestMethod.GET)
+    public List<Post> getAllForAdmin(){
+    	return postRepository.getAllPostForAdmin();
     }
     
 	
@@ -54,12 +61,17 @@ public class PostController {
     }
 	
 	
-	@RequestMapping(value = "/blog/{id}", method = RequestMethod.GET)
-	public List<Post> getAllPostByUserID(@PathVariable Long id){
+	@CrossOrigin
+	@RequestMapping(value = "/blog/getMyPost/{id}", method = RequestMethod.GET)
+	@ResponseBody
+	public List<Post> getAllPostByUserID(@PathVariable int id){
 		return postRepository.findAllByUserID(id);
 	}
+	
+	@CrossOrigin
 	@GetMapping(value = "/blog/{blogId}")
-	public Post postDetails(@PathVariable Long articleId) {
+	@ResponseBody
+	public Post postDetails(@PathVariable int articleId) {
 		return postRepository.getOne(articleId);
 	}
 	
@@ -73,23 +85,54 @@ public class PostController {
 		postToSubmit.setcontentHtml(imageUrl);
 		User user = userRepository.findByUserid(userID);
 		postToSubmit.setUser(user);
+		postToSubmit.setApproved(false);
 		postRepository.save(postToSubmit);
 		
 		return "success";
 	}
-	@RequestMapping(value = "/blog/delete/{blogID}",method = RequestMethod.GET)
+	
+	
+	@CrossOrigin
+	@RequestMapping(value = "/blog/delete/{blogID}",method = RequestMethod.DELETE)
 	@ResponseBody
-	public String deletePost(@PathVariable Long blogID) {
+	public String deletePost(@PathVariable int blogID) {
 		postRepository.delete(postRepository.getOne(blogID));
 		return "success";
 	}
-	@RequestMapping(value="/blog/update")
+	
+	
+	@CrossOrigin
+	@RequestMapping(value="/blog/update",method = RequestMethod.PUT)
 	@ResponseBody
-	public String postUpdate(@RequestBody PostHelper post,@RequestParam(value = "postID")int id) {
-		Long pId = Long.parseLong(Integer.toString(id));
-		Post exist = postRepository.getOne(pId);
+	public String postUpdate(@RequestPart("file") MultipartFile file,@RequestPart("post") PostHelper post,@RequestParam(value = "postId") int postId) {
+
+		
+		Post exist = postRepository.getOne(postId);
+		
+		
+		if(!file.isEmpty()) {
+			String imageUrl = uploadFile(file);
+			exist.setcontentHtml(imageUrl);
+		}
+		else {
+			exist.setcontentHtml(post.getContentHTML());
+		}
+		
+		if(!post.getBody().isEmpty()) {
 		exist.setBody(post.getBody());
+		}
 		postRepository.save(exist);
-		return "SUccess";
+		return "Success";
 	}
+	
+	@CrossOrigin
+	@RequestMapping(value = "/blog/approve/{blogID}",method = RequestMethod.PUT)
+	@ResponseBody
+	public String approvePost(@PathVariable int blogID) {
+		Post temp = postRepository.getOne(blogID);
+		temp.setApproved(true);
+		postRepository.save(temp);
+		return "success";
+	}
+		
 }

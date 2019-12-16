@@ -22,6 +22,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Entity
 @Table(name = "comments")
@@ -42,6 +44,7 @@ public class Comment {
     private Date createDate;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "post_id", referencedColumnName = "post_id", nullable = false)
     @NotNull
     private Post post;

@@ -25,6 +25,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -34,16 +36,15 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
-    private Long id;
+    private int id;
 
-   /* @NotBlank(message = "Title can't be empty.")
-    @Size(min = 3, message = "A title must be at least 3 characters.")
-    @Column(nullable = false)
-    private String title;*/
+
 
     @NotBlank(message = "Body can't be empty")
     @Column(nullable = false, length = 3000)
     private String body;
+    
+    private boolean isApproved;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -53,60 +54,46 @@ public class Post {
 
     @Column(nullable = true, name="contentHtml")
     private String contentHtml;
-    
-   /* @Column(nullable = false,name = "ageLimit")
-    private String ageLimit;*/
 
+
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     @JsonManagedReference
     private User user;
 
-	/*
-	 * @ManyToMany
-	 * 
-	 * @JoinTable( name="post_tags", joinColumns={@JoinColumn(name="post_id")},
-	 * inverseJoinColumns={@JoinColumn(name="tag_id")} )
-	 */
-    //private List<Tag> tags;
-
+    
+    @JsonIgnore
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private Collection<Comment> comments;
 
-    public Post(Long id, /*String title*/ String body, List<Comment> comments) {
-        this.id = id;
-        //this.title = title;
-        this.body = body;
-        this.comments = comments;
-    }
+  
+    public Post(String body, boolean isApproved, Date createDate,
+			String contentHtml, User user) {
+		super();
+		
+		this.body = body;
+		this.isApproved = isApproved;
+		this.createDate = createDate;
+		this.contentHtml = contentHtml;
+		this.user = user;
+		
+	}
 
-    public Post(/*String title*/ String body, User user, String imgUrl, Collection<Comment> comments) {
-      //  this.title = title;
-        this.body = body;
-        //this.tags = tags;
-        this.user = user;
-        this.contentHtml = imgUrl;
-        this.comments = comments;
-    }
 
     public Post() {
+    	super();
     }
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-   /* public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }*/
+  
 
     public String getBody() {
         return body;
@@ -116,11 +103,7 @@ public class Post {
         this.body = body;
     }
 
-   /* @Override
-    public String toString(){
-        return "Title: "+ this.getTitle() + " Body: "+ this.getBody();
-    }*/
-
+ 
     public Date getCreateDate() {
         return createDate;
     }
@@ -145,29 +128,16 @@ public class Post {
         this.contentHtml = imageUrl;
     }
 
-   /* public List<Tag> getTags() {
-        return tags;
-    }
 
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
-    }*/
-
-    public Collection<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(Collection<Comment> comments) {
-        this.comments = comments;
-    }
-
-	/*public String getAgeLimit() {
-		return ageLimit;
+	public boolean isApproved() {
+		return isApproved;
 	}
 
-	public void setAgeLimit(String ageLimit) {
-		this.ageLimit = ageLimit;
-	}*/
+	public void setApproved(boolean isApproved) {
+		this.isApproved = isApproved;
+	}
+
+    
     
 
 }

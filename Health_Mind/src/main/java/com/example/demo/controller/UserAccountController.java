@@ -16,13 +16,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.demo.model.ConfirmationToken;
 import com.example.demo.model.PostHelper;
 import com.example.demo.model.User;
 import com.example.demo.model.UserHelper;
 import com.example.demo.service.EmailSenderService;
+import com.example.demo.service.FileStorageService;
+import com.github.javafaker.File;
 import com.example.demo.repository.ConfirmationTokenRepository;
 import com.example.demo.repository.UserRepository;
 
@@ -31,6 +35,9 @@ import com.example.demo.repository.UserRepository;
 public class UserAccountController {
 
 	@Autowired
+	private FileStorageService fileStorageService;
+	
+	@Autowired
 	private UserRepository userRepository;
 	
 	@Autowired
@@ -38,14 +45,20 @@ public class UserAccountController {
 	
 	@Autowired
 	private EmailSenderService emailSenderService;
+	
+	
+	@CrossOrigin
+    public String uploadFile(@RequestParam("file") MultipartFile file) {
+        String fileName = fileStorageService.storeFile(file); 
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/downloadFile/")
+                .path(fileName)
+                .toUriString();
+       
+        
+        return fileDownloadUri;
+    }
 
-//	@RequestMapping(value="/register", method=RequestMethod.GET)
-//	public ModelAndView displayRegistration(ModelAndView modelAndView, User user)
-//	{
-//		modelAndView.addObject("user", user);
-//		modelAndView.setViewName("register");
-//		return modelAndView;
-//	}
 	
 	@RequestMapping(value="/emni",method = RequestMethod.POST)
 	@ResponseBody
@@ -118,6 +131,7 @@ public class UserAccountController {
 			temp.setName(user.getName());
 			temp.setPassword(user.getPassword());
 			temp.setEmailId(user.getEmail());
+			temp.setType("user");
 		//	ConfirmationToken confirmationToken = new ConfirmationToken(temp);
 			
 		//	confirmationTokenRepository.save(confirmationToken);
@@ -134,19 +148,39 @@ public class UserAccountController {
 		}
 
 	}
-	@RequestMapping(value="/update",method = RequestMethod.POST)
+	@CrossOrigin
+	@RequestMapping(value="/profile/update",method = RequestMethod.PUT)
 	@ResponseBody
-	public String test(@RequestBody UserHelper user,@RequestParam("userID")int id) {
+	public String test(@RequestPart("user") UserHelper user,@RequestPart("file") MultipartFile file,@RequestParam("userID")int id) {
 
 		User exist = userRepository.findByUserid(id);
 
 		System.out.println(exist.getEmailId());
+		
+		if(file!=null) {
+			String imageURL = uploadFile(file);
+			exist.setImageURL(imageURL);
+		}
+		
+		if(user.getEmail() != null)
 		exist.setEmailId(user.getEmail());
+		
+		if(user.getGender()!= null)
 		exist.setGender(user.getGender());
+		
+		if(user.getName()!= null)
 		exist.setName(user.getName());
+		
+		if(user.getBio()!= null)
 		exist.setBio(user.getBio());
+		
+		if(user.getPhn_no()!= null)
 		exist.setPhn_no(user.getPhn_no());
+		
+		if(user.getProfession()!= null)
 		exist.setProfession(user.getProfession());
+		
+		
 		userRepository.save(exist);
 		return "Success";
 	}

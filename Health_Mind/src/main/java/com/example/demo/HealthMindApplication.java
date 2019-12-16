@@ -17,5 +17,7 @@ public class HealthMindApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(HealthMindApplication.class, args);
 	}
+	
+	//INSERT INTO account VALUES (0,"","root","","",0,"root","admin","","","admin")
 
 }

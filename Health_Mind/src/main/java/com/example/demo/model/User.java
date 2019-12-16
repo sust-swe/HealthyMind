@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "account")
@@ -26,7 +27,9 @@ public class User {
 	@Column(name = "name")
 	private String name;
 	
+	private String type;
 	
+	private String imageURL;
 	private String emailId;
 	private String password;
 	//@DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -35,6 +38,8 @@ public class User {
 	@OneToMany(mappedBy = "user")
     @JsonBackReference
     private List<Post> posts;
+	
+	@JsonIgnore
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<Comment> comments;
 	public int getUserid() {
@@ -125,6 +130,20 @@ public class User {
 	public void setComments(List<Comment> comments) {
 		this.comments = comments;
 	}
+	public String getImageURL() {
+		return imageURL;
+	}
+	public void setImageURL(String imageURL) {
+		this.imageURL = imageURL;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	
 	
 	
 	

@@ -14,16 +14,23 @@ import com.example.demo.model.Post;
 import com.example.demo.model.User;
 
 @Repository("postRepository")
-public interface PostRepository extends JpaRepository<Post, Long> {
-	Optional<Post> findById(Long id);
+public interface PostRepository extends JpaRepository<Post, Integer> {
+	Optional<Post> findById(Integer id);
 	
 	Page<Post> findByUserOrderByCreateDateDesc(User user, Pageable pageable);
 
 	Page<Post> findAllByOrderByCreateDateDesc(Pageable pageable);
 	
-	@Query("select p from Post p where user_id = :userid")
-	List<Post> findAllByUserID(Long userid);
+	@Query("select p from Post p where user_id = :userid and is_approved = 1")
+	List<Post> findAllByUserID(int userid);
 	
-	@Query(value="select t from Post t")
+	@Query(value="select t from Post t where is_approved = 1")
 	List<Post> getAllPost();
+	
+	@Query(value="select t from Post t where is_approved = 0")
+	List<Post> getAllPostForAdmin();
+	
+	
+	
+	
 }
