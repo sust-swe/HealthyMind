@@ -2,9 +2,12 @@ package com.example.demo.model;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class PostHelper {
 	
 	private String body,contentHTML;
+	
 	
 	
 	public PostHelper(String body, String contentHTML) {
@@ -28,6 +31,8 @@ public class PostHelper {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
+	
 	
 	
 }

@@ -16,8 +16,6 @@ body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 1rem;
     line-height: 1.58;
-    color: #333;
-    background-color: #f4f4f4;
     height: 100%;
 }
 
@@ -27,7 +25,7 @@ body:before {
     position: absolute;
     top: 0;
     left: 0;
-    background: #128ff2;
+    background: #006600;
     content: "";
     z-index: 0;
 }

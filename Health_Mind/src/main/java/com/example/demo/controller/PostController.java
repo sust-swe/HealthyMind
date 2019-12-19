@@ -91,6 +91,20 @@ public class PostController {
 		return "success";
 	}
 	
+	@CrossOrigin
+	@PostMapping(value = "/blog/createOpt")
+	@ResponseBody
+	public String createPostOpt(@RequestPart("post") PostHelper post,@RequestParam(value = "userID") int userID ) {
+		Post postToSubmit = new Post();
+		postToSubmit.setBody(post.getBody());
+		User user = userRepository.findByUserid(userID);
+		postToSubmit.setUser(user);
+		postToSubmit.setApproved(false);
+		postRepository.save(postToSubmit);
+		
+		return "success";
+	}
+	
 	
 	@CrossOrigin
 	@RequestMapping(value = "/blog/delete/{blogID}",method = RequestMethod.DELETE)
